@@ -1,0 +1,11 @@
+Package: AutoEmma
+Type: Package
+Title: Automated Efficient Mixed Model Association Studies
+Version: 1.0.1
+Author: Alex Schiffer
+Maintainer: Alex Schiffer <alex.schiffer@childrens.harvard.edu>
+Description: AutoEmma simplifies the process of running genome-wide association studies (GWAS) using Efficient Mixed Model Association (EMMA).
+License: LGPL
+Encoding: UTF-8
+LazyData: true
+Byte-Compile: yes
