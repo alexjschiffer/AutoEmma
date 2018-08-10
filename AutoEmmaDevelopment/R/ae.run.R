@@ -115,21 +115,15 @@ ae.run <- function(genotype = "", phenotype = "", kinship = NULL, map = NULL, me
   # Save results spreadsheet
   write_csv(manhattan_data, (paste("results/", tools::file_path_sans_ext(phenotype), "-results.csv", sep = "")))
 
-  # Make manhattan plot
+  # Make Manhattan, QQ, and Regional Plots
   cat("\n** -- Saving manhattan plot.")
   ae.manhattan(manhattan_data,(paste("results/", tools::file_path_sans_ext(phenotype), "manhattan.png", sep = "")),
-               sl = 4.5, gwl = 8, title = (paste(tools::file_path_sans_ext(phenotype), "Manhattan Plot", sep = " "))
-               )
-
-  # Make regional manhattan plots
+               title = (paste(tools::file_path_sans_ext(phenotype), "Manhattan Plot", sep = " ")))
+  cat("\n** -- Saving Q-Q plot.")
+  ae.qq(manhattan_data, (paste("results/", tools::file_path_sans_ext(phenotype), "qq.png", sep = "")),
+        title = (paste(tools::file_path_sans_ext(phenotype), "Q-Q Plot", sep = " ")))
   cat("\n** -- Saving regional manhattan plots.")
   ae.make.regional(manhattan_data, (paste("results/", tools::file_path_sans_ext(phenotype), "regional.pdf", sep = "")))
-
-  # Extract p-values, then create and save Q-Q plot
-  cat("\n** -- Saving Q-Q plot.")
-  png((paste("results/", tools::file_path_sans_ext(phenotype), "qq.png", sep = "")), width = 1280, height = 720)
-  qq(manhattan_data[["P"]])
-  dev.off()
 
   # Make Input Diagnostic Graphs
   cat("\n** -- Saving input diagnostic graphs")

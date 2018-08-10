@@ -1,7 +1,7 @@
 ##################################################
 #   Function Name  : Check Required Packages     #
 #   Program Author : Alex Schiffer               #
-#   Last Updated   : June 28, 2018               #
+#   Last Updated   : August 10, 2018             #
 #                                                #
 #   D'Amato Lab, Boston Children's Hospital      #
 ##################################################
@@ -9,6 +9,9 @@
 ae.check.required <- function() {
   if(!suppressPackageStartupMessages(library(cowplot, quietly = TRUE, logical.return = TRUE, warn.conflicts = FALSE))) {
     suppressPackageStartupMessages(install.packages("cowplot", dependencies = TRUE))
+  }
+  if(!suppressPackageStartupMessages(library(ggrepel, quietly = TRUE, logical.return = TRUE, warn.conflicts = FALSE))) {
+    suppressPackageStartupMessages(install.packages("ggrepel", dependencies = TRUE))
   }
     if(!suppressPackageStartupMessages(library(stringi, quietly = TRUE, logical.return = TRUE, warn.conflicts = FALSE))) {
       suppressPackageStartupMessages(install.packages("stringi", dependencies = TRUE))

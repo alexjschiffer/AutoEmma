@@ -7,3 +7,17 @@ Automated Efficient Mixed Model Association Studies - R Package
 ```
 install.packages("file/path/AutoEmma_1.0.0.tar.gz", repos = NULL, type = "Source")
 ```
+
+## Change Log
+**Version 1.0.0**
+
+* Initial release
+
+**Version 1.0.1**
+
+* Simplified input diagnostic graphs
+
+**Version 1.1.1**
+
+* Improved manhattan and Q-Q plots
+* Added annotation of suggestive SNPs to manhattan plot
