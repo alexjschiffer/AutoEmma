@@ -1,6 +1,6 @@
 \name{ae.make.map}
 \alias{ae.make.map}
-\title{Automatically Creates a Map File Linking Individuals to Strains}
+\title{Create a Map File Linking Individuals to Strains}
 \author{
   Alex Schiffer \email{alex.schiffer@childrens.harvard.edu}
 }

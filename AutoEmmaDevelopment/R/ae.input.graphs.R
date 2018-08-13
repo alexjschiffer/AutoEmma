@@ -6,7 +6,7 @@
 #   D'Amato Lab, Boston Children's Hospital      #
 ##################################################
 
-ae.input.graphs <- function(gfile, pfile, labelsize = 5) {
+ae.input.graphs <- function(gfile, pfile, stdev = FALSE, labelsize = 10) {
   # Announce start of function
   cat("* Creating diagnostic graphs for input files.\n")
 
@@ -57,52 +57,21 @@ ae.input.graphs <- function(gfile, pfile, labelsize = 5) {
     nj()
 
   # Create heatmap
-  heatmap <- suppressMessages((ggcorrplot(k) + ggtitle("Kinship Matix") + coord_fixed(ratio = 1)
-     + scale_fill_continuous(low = "white", high = "blue",name = "Relatedness\n",limits= c(0,1))
-     + theme(plot.title = element_text(hjust = 0.5),
-             axis.text.x = element_text(size = labelsize),
-             axis.text.y = element_text(size = labelsize),
-             legend.title = element_text(size =12),
-             legend.text = element_text(size = labelsize),
-             legend.margin = margin(t = 1, r = 0, b = 0, l = 0, unit = "pt"),
-             legend.key.height=unit(2,"line"))))
+  heatmap <- suppressMessages((ggcorrplot(k) + ggtitle("Kinship Matrix") + coord_fixed(ratio = 1) +
+                                 scale_fill_continuous(low = "yellow", high = "red",name = "Relatedness\n",limits= c(0,1)) +
+                                 theme(plot.title = element_text(hjust = 0.5), legend.title = element_text(size = 12),
+                                       legend.text = element_text(size = labelsize),
+                                       legend.key.height=unit(2,"line"), axis.text.x=element_blank())))
 
   # Create cladogram
-  cladogram <- (ggtree(stree, layout = "circular", branch.length = "none") + ggtitle("Population Structure")
-    + theme(plot.title = element_text(hjust = 0.5), plot.margin = unit(c(0.5,0.25,0.25,0.25),"cm"))
-    + geom_tiplab(size = 2.75, aes(angle=angle)))
+  cladogram <- (ggtree(stree, layout = "circular", branch.length = "none") + ggtitle("Population Structure") +
+                  theme(plot.title = element_text(hjust = 0.5)) +
+                  geom_tiplab(size = 2.75, aes(angle=angle)))
 
-  # Initialize vectors for each statistic to be calculated
-  count = c()
-  avg = c()
-  sd = c()
-  mad = c()
-  counter <- 1
-
-  # Calculate Average, standard deviation, and median absolute deviation for each strain
-  for (i in seq_along(strains_vector)) {
-    temp <- dplyr::filter(pheno_df, toupper(STRAIN) == strains_vector[i])
-    count[counter] <- nrow(temp)
-    avg[counter] <- mean(temp$VALUE)
-    sd[counter] <- sd(temp$VALUE)
-    mad[counter] <- mad(temp$VALUE)
-    counter <- counter + 1
-  }
-
-  # Assemble averages data and save
-  new_data <- dplyr::data_frame(Count = count, Strain = strains_vector, Average = avg, Stdev = sd, Mad = mad)
-  write_tsv(x = new_data, path = (paste("results/", tools::file_path_sans_ext(pfile), "-averages.txt", sep = "")), append = FALSE, col_names = TRUE)
-
-  # Create bar graph of average phenotype per strain
-  arranged <- arrange(new_data, Average)
-  order <- arranged[["Strain"]]
-  average <- (ggplot(arranged, aes(x = Strain, y = Average, width = 1)) + geom_bar(stat = "identity", color = "white")
-    + theme(axis.text.x = element_text(angle = 45, hjust = 0.95, vjust = 0.95, size = 11))
-    + scale_x_discrete(limits = order) + ggtitle("Average Phenotype by Strain"))
-
-  # Create histogram of all values of phenotype
-  histogram <- (ggplot(pheno_df, aes(x = pheno_df$VALUE)) + geom_histogram(bins = 20, color = "white")
-    + labs(x = "Phenotype Values", y = "Count") + ggtitle("Distribution of Phenotypes"))
+  # Summarise averages for phenotype data
+  new_data <- pheno_df %>%
+    group_by(STRAIN) %>%
+    summarise(mean = mean(VALUE), stdev = sd(VALUE), mad = mad(VALUE), sem = sd(VALUE)/sqrt(length(VALUE)), count = n())
 
   # Create results folder or use an existing one
   cat("\n** Checking for existing results folder.")
@@ -113,38 +82,38 @@ ae.input.graphs <- function(gfile, pfile, labelsize = 5) {
     cat("\n** -- Using existing results folder.")
   }
 
+  # Save averages spreadsheet
+  write_tsv(x = new_data, path = (paste("results/", tools::file_path_sans_ext(pfile), "-averages.txt", sep = "")), append = FALSE, col_names = TRUE)
+
+  # Create bar graph of average phenotype per strain
+  if(stdev){
+    average <- ggplot(data = new_data, mapping = aes(x = reorder(STRAIN,mean), y = mean)) +
+      geom_col(width = 1, color = "white", fill = "royalblue3") +
+      theme(axis.text.x = element_text(angle = 45, hjust = 0.95, vjust = 0.95, size = labelsize)) +
+      ggtitle("Average Phenotype by Strain") +
+      labs(x = "Strain", y = "Average") +
+      geom_errorbar(aes(ymin = mean-stdev, ymax = mean+stdev))
+  } else {
+    average <- ggplot(data = new_data, mapping = aes(x = reorder(STRAIN,mean), y = mean)) +
+      geom_col(width = 1, color = "white", fill = "royalblue3") +
+      theme(axis.text.x = element_text(angle = 45, hjust = 0.95, vjust = 0.95, size = labelsize)) +
+      ggtitle("Average Phenotype by Strain") +
+      labs(x = "Strain", y = "Average") +
+      geom_errorbar(aes(ymin = mean-sem, ymax = mean+sem)) +
+      scale_y_continuous(expand = c(0,0))
+  }
+
+  # Create histogram of all values of phenotype
+  histogram <- ggplot(pheno_df, aes(x = pheno_df$VALUE)) +
+    geom_histogram(bins = 20, color = "white", fill = "royalblue3") +
+    labs(x = "Phenotype Values", y = "Count") +
+    ggtitle("Distribution of Phenotypes") +
+    scale_y_continuous(expand = c(0,0))
+
   # Save all plots
   ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-heatmap.png", sep = "")), plot = heatmap)
   ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-cladogram.png", sep = "")), plot = cladogram)
   ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-histogram.png", sep = "")), plot = histogram)
   ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-averages.png", sep = "")), plot = average)
 
-  # Save grid
-  average2 <- (ggplot(arranged, aes(x = Strain, y = Average, width = 1)) + geom_bar(stat = "identity", color = "white")
-    + theme(axis.text.x = element_text(angle = 45, hjust = 0.95, vjust = 0.95, size = 6))
-    + scale_x_discrete(limits = order) + ggtitle("Average Phenotype by Strain"))
-  cladogram2 <- (ggtree(stree, layout = "circular", branch.length = "none") + ggtitle("Population Structure")
-    + theme(plot.title = element_text(hjust = 0.5), plot.margin = unit(c(0.5,0.25,0.25,0.25),"cm"))
-    + geom_tiplab(size = 2, aes(angle=angle)))
-  grid <- plot_grid(heatmap, cladogram2, histogram, average2)
-  ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-grid.png", sep = "")), plot = grid)
 }
-
-  # For Future Development
-  #if (color) {
-    # Create categories
-    #pheno_data <- dplyr::mutate(pheno_data, cat = 1)
-    #strain_data$cat["Average" < 1] <- 2
-    #strain_data$cat[Average >= 1] <- 2
-    #pheno_cats <- strain_data[["cat"]]
-
-    # Create color spectrum
-    #cs <- colorRamps::blue2red(length(pheno_cats))
-
-    # Map color spectrum onto phenotype data
-    # colors_vecs <- c()
-    #for (x in c(1:length(stree$tip.label))) {
-    #  category <- pheno_cats[x]
-    #  colors_vecs[x] <- colors[category]
-    #}
-  #}

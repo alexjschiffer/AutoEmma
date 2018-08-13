@@ -8,7 +8,7 @@
   Imports provided files, runs EMMA (UCLA) with either REML or ML, then saves figures and results data to a results folder.
 }
 \usage{
-ae.run(genotype, phenotype, kinship, map, method, pval, snps)
+ae.run(genotype = "", phenotype = "", kinship = NULL, map = NULL, method = "REML")
 }
 \arguments{
   \item{genotype}{TSV containing SNP information for each strain. First 3 columns are SNP, CHR, BP. Rest of columns are snps for each strain.}
@@ -33,5 +33,5 @@ ae.run(genotype, phenotype, kinship, map, method, pval, snps)
   map1 <- ae.make.map(pheno.txt)
 
   # Run AutoEMMA
-  results <- ae.run(genotype = "geno.txt", phenotype = "pheno.txt", map = map1, method = "REML", gwl = line)
+  results <- ae.run(genotype = "", phenotype = "", kinship = NULL, map = NULL, method = "REML")
 }
