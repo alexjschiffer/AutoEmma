@@ -1,14 +1,14 @@
 ##################################################
 #   Function Name  : Make Input Graphs           #
 #   Program Author : Alex Schiffer               #
-#   Last Updated   : July 25, 2018               #
+#   Last Updated   : September 18, 2018          #
 #                                                #
 #   D'Amato Lab, Boston Children's Hospital      #
 ##################################################
 
-ae.input.graphs <- function(gfile, pfile, stdev = FALSE, labelsize = 10) {
+ae.input.graphs <- function(gfile, pfile, stdev = FALSE, wide = TRUE, labelsize = 10) {
   # Announce start of function
-  cat("* Creating diagnostic graphs for input files.\n")
+  cat("** Creating diagnostic graphs for input files.\n")
 
   # Load required packages
   ae.check.required()
@@ -47,6 +47,7 @@ ae.input.graphs <- function(gfile, pfile, stdev = FALSE, labelsize = 10) {
   trans_geno_matrix <- t(geno_matrix)
 
   # Create kinship matrix
+  cat("\n** Generating heatmap from kinship matrix.\n")
   k <- emma.kinship(geno_matrix)
   colnames(k) <- strains_vector
   rownames(k) <- strains_vector
@@ -111,9 +112,16 @@ ae.input.graphs <- function(gfile, pfile, stdev = FALSE, labelsize = 10) {
     scale_y_continuous(expand = c(0,0))
 
   # Save all plots
-  ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-heatmap.png", sep = "")), plot = heatmap)
-  ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-cladogram.png", sep = "")), plot = cladogram)
-  ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-histogram.png", sep = "")), plot = histogram)
-  ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-averages.png", sep = "")), plot = average)
-
+  cat("** Saving all plots to results folder.")
+  if(wide == TRUE){
+    ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-heatmap.png", sep = "")), plot = heatmap, width = 16, height = 9)
+    ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-cladogram.png", sep = "")), plot = cladogram, width = 16, height = 9)
+    ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-histogram.png", sep = "")), plot = histogram, width = 16, height = 9)
+    ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-averages.png", sep = "")), plot = average, width = 16, height = 9)
+  }else{
+    ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-heatmap.png", sep = "")), plot = heatmap, width = 16, height = 9)
+    ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-cladogram.png", sep = "")), plot = cladogram, width = 16, height = 9)
+    ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-histogram.png", sep = "")), plot = histogram, width = 16, height = 9)
+    ggsave(filename = (paste("results/", tools::file_path_sans_ext(pfile), "-averages.png", sep = "")), plot = average, width = 16, height = 9)
+  }
 }

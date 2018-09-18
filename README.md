@@ -2,10 +2,10 @@
 Automated Efficient Mixed Model Association Studies - R Package
 
 ## Installation
-1. Download AutoEmma_1.2.0.tar.gz from GitHub.
+1. Download AutoEmma_1.2.1.tar.gz from GitHub.
 2. Open R-Studio and type the following command into the Console.
 ```
-install.packages("file/path/AutoEmma_1.2.0.tar.gz", repos = NULL, type = "Source")
+install.packages("file/path/AutoEmma_1.2.1.tar.gz", repos = NULL, type = "Source")
 ```
 
 ## Quick Tutorial
@@ -35,3 +35,8 @@ install.packages("file/path/AutoEmma_1.2.0.tar.gz", repos = NULL, type = "Source
 * Added SEM option to average phenotype plot
 * Improved look of input diagnostics graphs
 * Vectorized averages calculation to speed up input diagnostics graphs
+
+**Version 1.2.1**
+
+* Added option to choose between wide-screen graphs (16x9) and square graphs (9x9)
+* Improved text updates for input diagnostic graphs
