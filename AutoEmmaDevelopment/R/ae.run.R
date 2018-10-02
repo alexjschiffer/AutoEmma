@@ -6,7 +6,7 @@
 #   D'Amato Lab, Boston Children's Hospital      #
 ##################################################
 
-ae.run <- function(genotype = "", phenotype = "", kinship = NULL, map = NULL, method = "REML") {
+ae.run <- function(genotype = "", phenotype = "", kinship = NULL, map = NULL, method = "REML", use_snps = "all") {
 
   # Check if required packages are installed and load them
   cat("** Starting AutoEmma run.\n** -- Ensuring all required packages are installed and loaded.")
@@ -58,7 +58,7 @@ ae.run <- function(genotype = "", phenotype = "", kinship = NULL, map = NULL, me
   # Generate IBS kinship matrix
   if (is.null(kinship)){
     cat("\n** Creating IBS kinship matrix.\n")
-    kinship_matrix <- emma.kinship(genotype_matrix, "additive", "all")
+    kinship_matrix <- emma.kinship(genotype_matrix, "additive", use = use_snps)
     cat("\n")
   } else {
     cat("\n** Using provided kinship matrix\n")

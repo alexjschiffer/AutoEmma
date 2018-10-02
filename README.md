@@ -2,10 +2,10 @@
 Automated Efficient Mixed Model Association Studies - R Package
 
 ## Installation
-1. Download AutoEmma_1.2.1.tar.gz from GitHub.
+1. Download AutoEmma_1.2.2.tar.gz from GitHub.
 2. Open R-Studio and type the following command into the Console.
 ```
-install.packages("file/path/AutoEmma_1.2.1.tar.gz", repos = NULL, type = "Source")
+install.packages("file/path/AutoEmma_1.2.2.tar.gz", repos = NULL, type = "Source")
 ```
 
 ## Quick Tutorial
@@ -40,3 +40,9 @@ install.packages("file/path/AutoEmma_1.2.1.tar.gz", repos = NULL, type = "Source
 
 * Added option to choose between wide-screen graphs (16x9) and square graphs (9x9)
 * Improved text updates for input diagnostic graphs
+
+**Version 1.2.2**
+
+* Removed reference in documentation to non-existent kinship use option
+* Added support for generating kinship matrix using all snps or only snps where all strains have information.
+
